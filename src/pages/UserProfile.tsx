@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { useAuth } from "../context/AuthContext";
 import { getUserProfile, updateUserProfile } from "../firebase/functions/user";
 import type { UserProfile } from "../firebase/types";
 
 export default function UserProfilePage() {
-  const { user } = useAuth();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [weight, setWeight] = useState(0);

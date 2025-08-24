@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getMeals } from "../firebase/functions/meals";
 import type { Meal } from "../firebase/types";
 import {
