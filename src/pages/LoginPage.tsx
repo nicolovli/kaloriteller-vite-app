@@ -3,6 +3,7 @@ import { signInWithGoogle, auth } from "../firebase/firebase";
 
 export default function LoginPage() {
   const { user, loading } = useAuth();
+  const { loginAsGuest } = useAuth();
 
   if (loading) return <div>Laster...</div>;
 
@@ -23,7 +24,10 @@ export default function LoginPage() {
           <button onClick={() => auth.signOut()}>Logg ut</button>
         </>
       ) : (
-        <button onClick={signInWithGoogle}>Logg inn med Google</button>
+        <>
+          <button onClick={signInWithGoogle}>Logg inn med Google</button>
+          <button onClick={loginAsGuest}>Fortsett som gjest</button>
+        </>
       )}
     </div>
   );

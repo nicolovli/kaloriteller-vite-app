@@ -1,15 +1,20 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { auth, db } from "../firebase/firebase";
-import { onAuthStateChanged } from "firebase/auth";
-import { setDoc, doc } from "firebase/firestore";
+import { onAuthStateChanged, signInAnonymously } from "firebase/auth";
 import type { User } from "firebase/auth";
+import { setDoc, doc } from "firebase/firestore";
 
 interface AuthContextValue {
   user: User | null;
   loading: boolean;
+  loginAsGuest: () => Promise<void>; // 👈 Ny funksjon
 }
 
-const AuthContext = createContext<AuthContextValue>({ user: null, loading: true });
+const AuthContext = createContext<AuthContextValue>({
+  user: null,
+  loading: true,
+  loginAsGuest: async () => {}, // placeholder
+});
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -26,10 +31,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           userRef,
           {
             uid: user.uid,
-            name: user.displayName,
-            email: user.email,
-            photoURL: user.photoURL,
+            name: user.displayName || "Guest",
+            email: user.email || null,
+            photoURL: user.photoURL || null,
             createdAt: new Date().toISOString(),
+            isAnonymous: user.isAnonymous, // 👈 nytt felt
           },
           { merge: true }
         );
@@ -39,7 +45,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => unsub();
   }, []);
 
-  return <AuthContext.Provider value={{ user, loading }}>{children}</AuthContext.Provider>;
+  // 👇 Fortsett som gjest-funksjon
+  const loginAsGuest = async () => {
+    try {
+      await signInAnonymously(auth);
+    } catch (error) {
+      console.error("Guest login failed:", error);
+    }
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, loading, loginAsGuest }}>{children}</AuthContext.Provider>
+  );
 }
 
 export function useAuth() {
