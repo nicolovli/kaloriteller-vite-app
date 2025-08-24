@@ -26,6 +26,7 @@ export default function LoginPage() {
       ) : (
         <>
           <button onClick={signInWithGoogle}>Logg inn med Google</button>
+          <br />
           <button onClick={loginAsGuest}>Fortsett som gjest</button>
         </>
       )}
